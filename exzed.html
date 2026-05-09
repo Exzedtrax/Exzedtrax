@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>System Trace</title>
+
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+
+    body{
+      background:black;
+      color:#00ff66;
+      font-family:Consolas, monospace;
+      overflow:hidden;
+    }
+
+    canvas{
+      position:fixed;
+      top:0;
+      left:0;
+      z-index:-1;
+    }
+
+    .terminal{
+      width:90%;
+      max-width:900px;
+      margin:50px auto;
+      border:1px solid #00ff66;
+      padding:25px;
+      background:rgba(0,0,0,0.85);
+      box-shadow:0 0 25px #00ff66;
+      border-radius:12px;
+    }
+
+    .title{
+      font-size:28px;
+      margin-bottom:20px;
+      text-shadow:0 0 10px #00ff66;
+    }
+
+    .line{
+      margin:10px 0;
+      opacity:0;
+      animation:fade 0.5s forwards;
+    }
+
+    @keyframes fade{
+      to{
+        opacity:1;
+      }
+    }
+
+    .warning{
+      color:red;
+      font-size:24px;
+      margin-top:30px;
+      text-shadow:0 0 12px red;
+      animation:blink 1s infinite;
+    }
+
+    @keyframes blink{
+      50%{
+        opacity:0.4;
+      }
+    }
+
+    .ip{
+      color:#00ffff;
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="matrix"></canvas>
+
+<div class="terminal">
+  <div class="title">> INITIALIZING SECURE TRACE...</div>
+
+  <div class="line" style="animation-delay:1s">
+    [✓] Connecting to node...
+  </div>
+
+  <div class="line" style="animation-delay:2s">
+    [✓] Bypassing firewall...
+  </div>
+
+  <div class="line" style="animation-delay:3s">
+    [✓] Accessing device metadata...
+  </div>
+
+  <div class="line" style="animation-delay:4s">
+    [✓] Fetching IP address...
+  </div>
+
+  <div class="line ip" id="ipLine" style="animation-delay:5s">
+    IP: Loading...
+  </div>
+
+  <div class="line" style="animation-delay:6s">
+    [✓] Device access level: LIMITED
+  </div>
+
+  <div class="line" style="animation-delay:7s">
+    [✓] Session recorded successfully
+  </div>
+
+  <div class="warning">
+    ⚠️ SYSTEM MONITOR ACTIVE ⚠️
+  </div>
+</div>
+
+<script>
+fetch("https://api.ipify.org?format=json")
+.then(res => res.json())
+.then(data => {
+  document.getElementById("ipLine").innerHTML =
+    "[✓] TARGET IP: " + data.ip;
+});
+
+// Matrix effect
+const canvas = document.getElementById("matrix");
+const ctx = canvas.getContext("2d");
+
+canvas.height = window.innerHeight;
+canvas.width = window.innerWidth;
+
+const chars = "01ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const fontSize = 14;
+const columns = canvas.width / fontSize;
+
+const drops = [];
+
+for(let x = 0; x < columns; x++){
+  drops[x] = 1;
+}
+
+function draw(){
+  ctx.fillStyle = "rgba(0,0,0,0.05)";
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  ctx.fillStyle = "#00ff66";
+  ctx.font = fontSize + "px monospace";
+
+  for(let i = 0; i < drops.length; i++){
+    const text = chars.charAt(
+      Math.floor(Math.random() * chars.length)
+    );
+
+    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+    if(drops[i] * fontSize > canvas.height &&
+       Math.random() > 0.975){
+      drops[i] = 0;
+    }
+
+    drops[i]++;
+  }
+}
+
+setInterval(draw, 35);
+</script>
+
+</body>
+</html>
